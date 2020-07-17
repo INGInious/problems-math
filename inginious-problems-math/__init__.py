@@ -17,12 +17,21 @@ from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious.frontend.parsable_text import ParsableText
 from inginious.frontend.pages.utils import INGIniousAuthPage
+from inginious.frontend.pages.course_admin.utils import INGIniousSubmissionAdminPage
 from inginious.frontend.pages.course import handle_course_unavailable
 
 __version__ = "0.1.dev0"
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
 
+def add_admin_menu(course): # pylint: disable=unused-argument
+    """ Add a menu for jplag analyze in the administration """
+    path_table = web.ctx.env["PATH_INFO"].split("/")
+    taskid = path_table[-1]
+    task = course.get_task(taskid)
+    if task is not None:
+        return ('../../plugins/math/visualization/'+course.get_id()+'/'+taskid, '<i class="fa fa-search fa-fw"></i>&nbsp; Answers Visualization')
+    return None
 
 class StaticMockPage(object):
     # TODO: Replace by shared static middleware and let webserver serve the files
@@ -77,6 +86,25 @@ class HintPage(INGIniousAuthPage):
                                                  "taskid": taskid}, {"$set": {"state": json.dumps(state)}})
 
         return hints
+
+
+class StudentAnswersVisualization(INGIniousSubmissionAdminPage):
+    def GET_AUTH(self, courseid,taskid):
+        course = self.course_factory.get_course(courseid)
+        task = self.task_factory.get_task(course,taskid)
+        problems = task.get_problems()
+        submissions = list(self.database.submissions.find({"courseid": courseid, "taskid": taskid,"status":"done"}))
+        answers = {}
+        for sub in submissions:
+            input = self.submission_manager.get_input_from_submission(sub)
+            for problem in problems:
+                hash = str(input['input'][problem.get_id()])
+                if hash in answers:
+                    answers[hash]= answers[hash]+1
+                else:
+                    answers[hash] = 1
+        return self.template_helper.get_custom_renderer(PATH_TO_PLUGIN + "/templates/") \
+            .response_visualization(course, answers)
 
 class MathProblem(Problem):
     """Display an input box and check that the content is correct"""
@@ -220,9 +248,11 @@ def init(plugin_manager, course_factory, client, plugin_config):
     # TODO: Replace by shared static middleware and let webserver serve the files
     plugin_manager.add_page('/plugins/math/static/(.+)', StaticMockPage)
     plugin_manager.add_page('/plugins/math/hint', HintPage)
+    plugin_manager.add_page('/plugins/math/visualization/(.+)/(.+)', StudentAnswersVisualization)
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/mathquill.css")
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/matheditor.css")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/mathquill.min.js")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/math.js")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/matheditor.js")
     course_factory.get_task_factory().add_problem_type(DisplayableMathProblem)
+    plugin_manager.add_hook('course_admin_menu', add_admin_menu)

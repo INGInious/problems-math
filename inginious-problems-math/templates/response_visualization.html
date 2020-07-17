@@ -1,0 +1,50 @@
+$def with(course,answers)
+$var title: Response visualization
+
+$var Column: $:template_helper.call('course_admin_menu',course=course,current='answers visualization')
+
+$#
+$# This file is part of Reporting plugin. See the LICENSE and the COPYRIGHTS files for
+$# more information about the licensing of this file.
+$#
+
+$def NavbarF():
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="$get_homepath()/course/$course.get_id()">$course.get_name(user_manager.session_language())</a></li>
+            <li class="breadcrumb-item"><a href="$get_homepath()/admin/$course.get_id()" title="Administration" data-toggle="tooltip" data-placement="bottom">
+                <i class="fa fa-user-secret"></i></a></li>
+            <li class="breadcrumb-item active"><a href="#"><i class="fa fa-bar-chart"></i> Answers visualization <span class="sr-only">(current)</span></a></li>
+        </ol>
+    </nav>
+$var Navbar: $:NavbarF()
+
+<h1>Answers visualization</h1>
+<table class="table">
+    <thead class="table-borderless">
+        <th>Solution(s)</th>
+        <th>Count</th>
+
+    </thead>
+    $for key in answers:
+        <tr><td><ul class="math_value" style="list-style-type: none;" data-math-form="$key"></ul></td><td>$answers[key]</td></tr>
+</table>
+
+<script>
+    var MQ = MathQuill.getInterface(2);
+    $$( ".math_value" ).each(function() {
+      let div_elem = $$(this);
+      let text = div_elem.data("math-form");
+      text = text.split("'").join("\"");
+      let array_math = JSON.parse(text);
+      $$(array_math).each(function(){
+          div_elem.append("<li><span class='math_sol'>"+this+"</span></li>");
+      });
+
+    });
+    $$( ".math_sol" ).each(function() {
+       MQ.StaticMath(this);
+    });
+
+</script>
+
