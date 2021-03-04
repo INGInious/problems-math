@@ -111,7 +111,7 @@ class MathProblem(Problem):
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         # We parse LaTeX one time, and then reparse to evaluate constants correctly
-        eq = parse_latex(latex_str)
+        eq = re.sub('_{(.*?)}', r'_\1', str(parse_latex(latex_str)))
         # Here we add an alias "e" as the E=2.71...
         return sympify(str(eq), locals={"e": E}, evaluate=False)
 
