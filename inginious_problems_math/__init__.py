@@ -110,11 +110,12 @@ class MathProblem(Problem):
         latex_str = re.sub("(\\\left|\\\\right)", "", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
-        latex_str = re.sub(r'_(\w+)(\w+)', r'_{\1}\2', latex_str) #x_ab means x_{a} b but x_{ab} correclty means x_{ab}
+        latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
 
-        # We parse LaTeX one time, and then reparse to evaluate constants correctly
-        eq = re.sub('_{(\w*?)}', r'_\1', str(parse_latex(latex_str))) #sympify() does not handle the {} symbols so we remove them, they were no longer needed anyway
-        return sympify(str(eq), locals={"e": E}, evaluate=False)
+        eq = parse_latex(latex_str)
+        return eq
+
+
 
     def is_equal(self, eq1, eq2):
         if isinstance(eq1, Number) and isinstance(eq2, Number):
