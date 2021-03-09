@@ -107,12 +107,11 @@ class MathProblem(Problem):
     @classmethod
     def parse_equation(cls, latex_str):
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
-        latex_str = re.sub("(\\\left|\\\\right)", "", latex_str)
+        latex_str = re.sub("(\\\left|\\\right)", "", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
-
-        eq = parse_latex(latex_str)
+        eq = parse_latex(latex_str).subs("e", "E") #Allow the notation "e" to represent the 2.71... constant
         return eq
 
 
