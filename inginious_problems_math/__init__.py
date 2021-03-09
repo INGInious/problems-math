@@ -11,7 +11,7 @@ from flask import send_from_directory
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
-from sympy import simplify, sympify, N, E, Equality
+from sympy import simplify, sympify, N, E, pi, Equality
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
@@ -111,7 +111,8 @@ class MathProblem(Problem):
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
-        eq = parse_latex(latex_str).subs("e", "E") #Allow the notation "e" to represent the 2.71... constant
+        latex_str = re.sub(r'pi', r'\\pi', latex_str) #translates "pi" into the pi symbol (otherwise it's translated into p*i)
+        eq = parse_latex(latex_str).subs([("e", "E"), ("pi", pi)]) #add general constants
         return eq
 
 

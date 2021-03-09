@@ -5,7 +5,7 @@ import math
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
-from sympy import simplify, sympify, N, E, Equality
+from sympy import simplify, sympify, N, E, pi, Equality
 from inginious_problems_math import MathProblem
 
 
@@ -169,6 +169,7 @@ class TestParseEquation(unittest.TestCase):
         self.assertEqual((float(MathProblem.parse_equation("\\left(\\frac{\\sqrt{x_{11}x_{12}+x_{13}x_{14}}}{\\log\\left(\\sqrt[3]{x_{15}^{x_{12}}}\\right)}\\right)^{\\log\\left(x_{12}x_{13}\\right)}").subs([("x_{11}",1),("x_{12}", 2),("x_{13}", 3),("x_{14}", 4),("x_{15}", 5)]))), (math.sqrt(14)/math.log10(25**(1/3)))**math.log10(6))
         self.assertEqual((float(MathProblem.parse_equation("\\sqrt{\\left(\\frac{x_{12}^{x_{14}}}{x_{13}^{x_{12}}}\\right)}").subs([("x_{11}",1),("x_{12}", 2),("x_{13}", 3),("x_{14}", 4),("x_{15}", 5)]))), 4/3)
         self.assertEqual((float(MathProblem.parse_equation("\\int_0^1\\sqrt{\\left(\\frac{x_{12}^{x_{14}}}{x_{13}^{x_{12}}}\\right)}").subs([("x_{11}",1),("x_{12}", 2),("x_{13}", 3),("x_{14}", 4),("x_{15}", 5)]))), 4/3)
+        self.assertEqual(float(MathProblem.parse_equation("2pi\\cdot r_1").subs("r_{1}",10)), 2*math.pi*10)
 
 
 
