@@ -11,7 +11,7 @@ from flask import send_from_directory
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
-from sympy import simplify, sympify, N, E, pi, Equality
+from sympy import simplify, sympify, N, E, pi, I, Equality
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
