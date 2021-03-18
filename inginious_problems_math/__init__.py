@@ -111,8 +111,8 @@ class MathProblem(Problem):
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
-        latex_str = re.sub(r'pi', r'\\pi', latex_str) #translates "pi" into the pi symbol (otherwise it's translated into p*i)
-        eq = parse_latex(latex_str).subs([("e", "E"), ("pi", pi)]) #add general constants
+        #general constants: always use i for imaginary constant, e for natural logarithm basis and \pi (or the symbol from toolbox) for pi
+        eq = parse_latex(latex_str).subs([("e", E), ("i", I)]) 
         return eq
 
 
