@@ -6,7 +6,6 @@ from inginious_problems_math.math_problem import MathProblem, DisplayableMathPro
 from sympy import Matrix
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
-__version__ = "0.1.dev0"
 problem_type = "math_matrix"
 math_format = "matrix: a,b:c,d  vector: a,b,c"
 math_problem_info = "This problem type is designed for matrix such as \n"\
@@ -30,21 +29,24 @@ class MathMatrixProblem(MathProblem):
     def get_type(cls):
         return problem_type
 
-    def parse_equation(cls, latex_str):
-        """Redefines the parse_equation to parse each element of each line"""
+    @classmethod
+    def parse_answer(cls, latex_str):
+        """Redefines the parse_answer to parse each element of each line"""
         latex_str = latex_str.replace('\\left[', '')
         latex_str = latex_str.replace('\\right]', '')
         latex_str_tab = latex_str.split(':')
         return Matrix(list(map(cls.parse_line,latex_str_tab)))
 
-    def parse_line(cls, latex_str):
+    @classmethod
+    def parse_line(cls,latex_str):
         """Parse each element of a line"""
         latex_str_tab = latex_str.split(',')
         return list(map(cls.parse_element,latex_str_tab))
 
+    @classmethod
     def parse_element(cls, latex_str):
         """Parse a single element"""
-        return MathProblem.parse_equation(cls, latex_str)
+        return MathProblem.parse_answer(latex_str)
 
     def is_equal(self, matrix1, matrix2):
         """Refefines the is_equal method to compare two matrix by comparing lines one by one"""
@@ -89,7 +91,7 @@ class DisplayableMathMatrixProblem(MathMatrixProblem, DisplayableProblem):
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
-        return DisplayableMathProblem.show_editbox(template_helper, key, language, problem_type=problem_type, problem_type_info=math_problem_info)
+        return DisplayableMathProblem.show_editbox(template_helper, key, language, problem_type="matrix", problem_type_info=math_problem_info)
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language):

@@ -13,8 +13,7 @@ from inginious.frontend.parsable_text import ParsableText
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
 PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
-__version__ = "0.1.dev0"
-math_format = "expression: 5x+3  equation: x=y+3"
+math_format = "expression: 5x+3  equation: x=y+3  inequation: x<2y+1"
 problem_type = "math"
 math_problem_info = "This problem type is designed to allow many types \n" \
                     "of mathematical answers format. Including: \n" \
@@ -75,9 +74,9 @@ class MathProblem(Problem):
         if not isinstance(self._answers, list):
             return None, None, None, 0, state
         try:
-            student_answers = [self.parse_equation(eq) for eq in task_input[self.get_id()]]
-            correct_answers = [self.parse_equation(eq) for eq in self._answers]
-            unexpec_answers = [self.parse_equation(choice["answer"]) for choice in self._choices]
+            student_answers = [self.parse_answer(eq) for eq in task_input[self.get_id()]]
+            correct_answers = [self.parse_answer(eq) for eq in self._answers]
+            unexpec_answers = [self.parse_answer(choice["answer"]) for choice in self._choices]
         except Exception as e:
             return False, None, ["_wrong_answer", "Parsing error: \n\n .. code-block:: \n\n\t" + str(e).replace("\n", "\n\t")], 1, state
 
@@ -121,7 +120,8 @@ class MathProblem(Problem):
         """Sort the answers based on alphabetical order"""
         return sorted(answers, key=lambda eq: str(eq))
 
-    def parse_equation(cls, latex_str):
+    @classmethod
+    def parse_answer(cls, latex_str):
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
         latex_str = re.sub("(\\\left|\\\right)", "", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
