@@ -5,7 +5,7 @@
 <div class="form-group row">
     <label for="button-PID" class="col-sm-2 control-label">{{ _("Problem type") }}</label>
     <div class="col-sm-10">
-        <button type="button" id="button-PID" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#Modal-problem_type-PID" >{{ _(problem_type) }}</button>
+        <button type="button" id="button-PID" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#Modal-{{problem_type}}-PID" >{{ _(problem_type) }}</button>
     </div>
 </div>
 
@@ -76,7 +76,7 @@
 
 
 <!-- Modal -->
-<div id="Modal-problem_type-PID" class="modal fade" role="dialog">
+<div id="Modal-{{problem_type}}-PID" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
