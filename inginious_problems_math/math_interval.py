@@ -80,6 +80,8 @@ class MathIntervalProblem(MathProblem):
         #Intervals
         if type(eq1) in [Interval, Union, FiniteSet, EmptySet] and type(eq2) in [Interval, Union, FiniteSet, EmptySet]:
             return eq1 == eq2 or simplify(eq1) == simplify(eq2)
+        elif eq1 == EmptySet and eq2 == EmptySet:
+            return True
         return False
 
 class DisplayableMathIntervalProblem(MathIntervalProblem, DisplayableProblem):

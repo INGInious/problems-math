@@ -28,7 +28,7 @@ class MathMatrixProblem(MathProblem):
     def parse_line(cls,latex_str):
         """Parse each element of a line"""
         latex_str_tab = latex_str.split(',')
-        return list(map(cls.parse_element,latex_str_tab))
+        return list(map(cls.parse_element, latex_str_tab))
 
     @classmethod
     def parse_element(cls, latex_str):
