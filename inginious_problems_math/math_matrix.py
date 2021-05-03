@@ -6,6 +6,7 @@ from inginious_problems_math.math_problem import MathProblem, DisplayableMathPro
 from sympy import Matrix
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
+PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
 problem_type = "math_matrix"
 math_format = "matrix: a,b:c,d  vector: a,b,c"
 
@@ -66,6 +67,10 @@ class MathMatrixProblem(MathProblem):
 class DisplayableMathMatrixProblem(MathMatrixProblem, DisplayableProblem):
     """ A displayable math problem """
 
+    # Some class attributes
+    problem_type = "math_matrix"
+    html_file = "math_edit.html"
+
     def __init__(self, problemid, content, translations, taskfs):
         MathMatrixProblem.__init__(self, problemid, content, translations, taskfs)
 
@@ -78,7 +83,8 @@ class DisplayableMathMatrixProblem(MathMatrixProblem, DisplayableProblem):
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
-        return DisplayableMathProblem.show_editbox(template_helper, key, language, problem_type=problem_type, friendly_type =cls.get_type_name(language))
+        return template_helper.render(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key,
+                                      problem_type=cls.problem_type, friendly_type=cls.get_type_name(language))
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language):

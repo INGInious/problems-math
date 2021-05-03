@@ -161,8 +161,13 @@ class MathProblem(Problem):
 class DisplayableMathProblem(MathProblem, DisplayableProblem):
     """ A displayable match problem """
 
+    # Some class attributes
+    problem_type = "math"
+    html_file = "math_edit.html"
+
     def __init__(self, problemid, content, translations, taskfs):
         MathProblem.__init__(self, problemid, content, translations, taskfs)
+
 
     @classmethod
     def get_type_name(self, language):
@@ -176,8 +181,8 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
                                       header=header, hints=self._hints, format=format)
 
     @classmethod
-    def show_editbox(cls, template_helper, key, language, problem_type="math", friendly_type="math", html_file="math_edit.html"):
-        return template_helper.render(html_file, template_folder=PATH_TO_TEMPLATES, key=key, problem_type=problem_type, friendly_type=friendly_type)
+    def show_editbox(cls, template_helper, key, language):
+        return template_helper.render(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key, problem_type=cls.problem_type, friendly_type=cls.get_type_name(language))
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language, format=math_format):

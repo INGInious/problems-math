@@ -7,6 +7,7 @@ from inginious_problems_math.math_problem import MathProblem, DisplayableMathPro
 from sympy import simplify, sympify, N, E, pi, I, Union, Intersection, FiniteSet, EmptySet, ConditionSet, S
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
+PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
 math_format = "Explicit: {1,2,3}  Implicit: {x|x<4|N}"
 problem_type = "math_set"
 
@@ -85,7 +86,7 @@ class MathSetProblem(MathProblem):
         conditions_tab = conditions.split("\\&")
         final_conditions = None
         for condition in conditions_tab:
-            if condition.startswith("(") and condition.endswith(")"):
+            if condition.startswith("(") and condition.endswith(")"):  #MathProblem.parse_answer does not accept equation/inequation surrounded by parenthesis
                 condition = condition[1:-1]
             condition = MathProblem.parse_answer(condition)
             if final_conditions is None:
@@ -113,6 +114,10 @@ class MathSetProblem(MathProblem):
 class DisplayableMathSetProblem(MathSetProblem, DisplayableProblem):
     """ A displayable math problem """
 
+    # Some class attributes
+    problem_type = "math_set"
+    html_file = "math_set_edit.html"
+
     def __init__(self, problemid, content, translations, taskfs):
         MathSetProblem.__init__(self, problemid, content, translations, taskfs)
 
@@ -125,7 +130,8 @@ class DisplayableMathSetProblem(MathSetProblem, DisplayableProblem):
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
-        return DisplayableMathProblem.show_editbox(template_helper, key, language, problem_type=problem_type, friendly_type=cls.get_type_name(language), html_file="math_set_edit.html")
+        return template_helper.render(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key,
+                                      problem_type=cls.problem_type, friendly_type=cls.get_type_name(language))
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language):
