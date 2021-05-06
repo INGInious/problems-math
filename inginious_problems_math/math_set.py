@@ -115,7 +115,6 @@ class DisplayableMathSetProblem(MathSetProblem, DisplayableProblem):
     """ A displayable math problem """
 
     # Some class attributes
-    problem_type = "math_set"
     html_file = "math_set_edit.html"
 
     def __init__(self, problemid, content, translations, taskfs):
@@ -131,7 +130,7 @@ class DisplayableMathSetProblem(MathSetProblem, DisplayableProblem):
     @classmethod
     def show_editbox(cls, template_helper, key, language):
         return template_helper.render(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key,
-                                      problem_type=cls.problem_type, friendly_type=cls.get_type_name(language))
+                                      problem_type=problem_type, friendly_type=cls.get_type_name(language))
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language):

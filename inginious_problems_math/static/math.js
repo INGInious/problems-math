@@ -207,9 +207,7 @@ function studio_init_template_math_set(well, pid, problem)
     if("set_type" in problem)
         set_type = problem["set_type"];
 
-    radio_set_type = document.getElementById("set_"+ set_type + "-"+pid);
-    if (typeof(radio_set_type) != 'undefined' && radio_set_type != null)
-        radio_set_type.checked = true;
+    $("#set_"+ set_type + "-"+pid).attr('checked', true)
 
     jQuery.each(problem["answers"], function(index, elem) {
         math_set_create_answer(pid, elem);
@@ -221,9 +219,5 @@ function math_set_create_answer(pid, choice_data) {
 }
 
 function math_set_modify_format(pid, value){
-    var element =  document.getElementById("format-"+pid);
-    if (typeof(element) != 'undefined' && element != null)
-    {
-        document.getElementById("format-"+pid).innerHTML=value
-    }
+    $("#format_edit-" + pid).text(value)
 }
