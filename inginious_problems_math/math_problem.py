@@ -73,15 +73,22 @@ class MathProblem(Problem):
         for i in range(0, len(self._choices)):
             unexpec_answer = unexpec_answers[i]
             for student_answer in student_answers:
-                if self.is_equal(student_answer, unexpec_answer):
-                    msg = self.gettext(language, self._choices[i]["feedback"])
-                    return False, None, [msg], 0, state
+                try:
+                    if self.is_equal(student_answer, unexpec_answer):
+                        msg = self.gettext(language, self._choices[i]["feedback"])
+                        return False, None, [msg], 0, state
+                except Exception as e:
+                    return False, None, [str(e)], 0, state
 
         for i in range(0, len(correct_answers)):
-            if not self.is_equal(student_answers[i], correct_answers[i]):
-                msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
-                msg += ["Not correct : :math:`{}`".format(latex(student_answers[i]))]
-                return False, None, msg, 0, state
+            try:
+                if not self.is_equal(student_answers[i], correct_answers[i]):
+                    msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
+                    msg += ["Not correct : :math:`{}`".format(latex(student_answers[i]))]
+                    return False, None, msg, 0, state
+            except Exception as e:
+                return False, None, [str(e)], 0, state
+
 
         msg = self.gettext(language, self._success_message) or "_correct_answer"
         return True, None, [msg], 0, state
@@ -98,12 +105,16 @@ class MathProblem(Problem):
 
     @classmethod
     def parse_answer(cls, latex_str):
+
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
         latex_str = re.sub("(\\\left|\\\right)", "", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
         latex_str = latex_str.replace("\\ne", "\\neq")
+        latex_str = latex_str.replace("\\right|", "|")
+        latex_str = latex_str.replace("\\left|", "|")
+
         #general constants: always use i for imaginary constant, e for natural logarithm basis and \pi (or the symbol from toolbox) for pi
         eq = sympify(parse_latex(latex_str).subs([("e", E), ("i", I), ("pi", pi)]))
         return simplify(eq)
@@ -112,7 +123,6 @@ class MathProblem(Problem):
         """Compare answers"""
         #answer=eq1, solution=eq2
         equation_types = [Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan]
-
         if self._tolerance:
             eq1 = eq1.subs([(E, math.e), (pi, math.pi)])
             eq2 = eq2.subs([(E, math.e), (pi, math.pi)])
@@ -134,7 +144,6 @@ class MathProblem(Problem):
     @classmethod
     def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
-
         if "tolerance" in problem_content:
             if problem_content["tolerance"]:
                 problem_content["tolerance"] = float(problem_content["tolerance"])
