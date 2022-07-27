@@ -42,10 +42,62 @@
 </div>
 
 {% if (problem_type == "math") %}
-    <div class="form-group row">
-        <label for="tolerance-PID" class="col-sm-2 control-label">{{_("Tolerance")}}</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" id="tolerance-PID" name="problem[PID][tolerance]" placeholder="0.01"/>
+    <div class="section tasks_list sections_list card mb-4">
+        <div class="section_header handle card-header d-flex justify-content-between pr-3" onclick="dropdown(this)">
+            <span class="title">
+                {{ _("Other options") }}
+            </span>
+            <span class="divider"></span>
+            <span style="font-size: 1.5rem;" class="dropdown_button fa fa-caret-left close pl-3"></span>
+        </div>
+        <div class="content ml-4" style="display:none">
+            <br>
+            <div class="form-group row">
+                <label for="tolerance-PID" class="col-sm-2 control-label">{{_("Tolerance")}}</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="tolerance-PID" name="problem[PID][tolerance]" placeholder="0.01"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 control-label">{{_("Comparison type")}}</label>
+                <div class="col-sm-10">
+                    <label>
+                        <input type="radio" value="perfect_match" id="perfect_match-PID" name="problem[PID][comparison_type]"/>
+                        {{ _("Perfect match between the student answer and the solution, including order of operands ") }}
+                    </label><br/>
+                    <label>
+                        <input type="radio" value="symbolic" id="symbolic-PID" name="problem[PID][comparison_type]"/>
+                        {{ _("Symbolic equality, for example : (x+1)² = x²+2x+1") }}
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="use_log-PID" class="col-sm-2 control-label">{{ _("Contains logarithms") }}</label>
+                <div class="col-sm-10">
+                    <div class="checkbox"><label>
+                        <input type="checkbox" id="use_log-PID" name="problem[PID][use_log]"/>&nbsp;
+                        {{_("Use it if the solution contains any logarithms")}}&nbsp;
+                    </label></div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="use_trigo-PID" class="col-sm-2 control-label">{{ _("Contains trigonometry") }}</label>
+                <div class="col-sm-10">
+                    <div class="checkbox"><label>
+                        <input type="checkbox" id="use_trigo-PID" name="problem[PID][use_trigo]"/>&nbsp;
+                        {{_("Use it if the solution contains any trigonometry")}}&nbsp;
+                    </label></div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="use_complex-PID" class="col-sm-2 control-label">{{ _("Contains complexes") }}</label>
+                <div class="col-sm-10">
+                    <div class="checkbox"><label>
+                        <input type="checkbox" id="use_complex-PID" name="problem[PID][use_complex]"/>&nbsp;
+                        {{_("Use it if the variable's domain includes complexes")}}&nbsp;
+                    </label></div>
+                </div>
+            </div>
         </div>
     </div>
 {% endif %}

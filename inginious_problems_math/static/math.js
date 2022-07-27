@@ -18,6 +18,12 @@ function studio_init_template_math(well, pid, problem)
     var success_message = "";
     var error_message = "";
     var hints = "";
+    var use_log = problem["use_log"];
+    var use_trigo = problem["use_trigo"];
+    var use_complex = problem["use_complex"];
+    var comparison_type = 'symbolic';
+    if("comparison_type" in problem)
+        comparison_type = problem["comparison_type"];
     if("tolerance" in problem)
         tolerance = problem["tolerance"];
     if("success_message" in problem)
@@ -27,9 +33,12 @@ function studio_init_template_math(well, pid, problem)
     if("hints" in problem)
         hints = problem["hints"];
     if("answer" in problem) // retrocompat
-        problem["answers"] = [problem["answer"]]
-
+        problem["answers"] = [problem["answer"]];
     $("#tolerance-" + pid).val(tolerance);
+    $("#" + comparison_type + "-" + pid).prop("checked", true);
+    $("#use_log-" + pid).prop("checked", use_log);
+    $("#use_trigo-" + pid).prop("checked", use_trigo);
+    $("#use_complex-" + pid).prop("checked", use_complex);
     registerCodeEditor($('#success_message-' + pid)[0], 'rst', 1).setValue(success_message);
     registerCodeEditor($('#error_message-' + pid)[0], 'rst', 1).setValue(error_message);
     registerCodeEditor($('#hints-' + pid)[0], 'rst', 1).setValue(hints);
