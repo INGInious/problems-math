@@ -3,6 +3,7 @@ import re
 import json
 import math
 
+from datetime import datetime
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
@@ -33,6 +34,9 @@ class MathProblem(Problem):
         self._use_log = content.get("use_log", False)
         self._use_trigo = content.get("use_trigo", False)
         self._use_complex = content.get("use_complex", False)
+        self._error_message_visibility = content.get("error_msg_visibility", "always")
+        self._error_msg_attempts = content.get("error_msg_attempts", 0)
+        self._error_msg_visibility_start = content.get("error_msg_visibility_start", "2000-01-01 00:00:00")
 
     @classmethod
     def get_type(cls):
@@ -86,7 +90,10 @@ class MathProblem(Problem):
         for i in range(0, len(correct_answers)):
             try:
                 if not self.is_equal(student_answers[i], correct_answers[i]):
-                    msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
+                    if self.check_visibility_error_msg(task_input):
+                        msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
+                    else:
+                        msg = ["_wrong_answer"]
                     msg += ["Not correct : :math:`{}`".format(latex(student_answers[i]))]
                     return False, None, msg, 0, state
             except Exception as e:
@@ -101,6 +108,21 @@ class MathProblem(Problem):
         correct_len = len(correct_answer) == len(student_anwer)
         message = "Expected {} answer(s)".format(len(correct_answer))
         return [correct_len, message]
+
+    def check_visibility_error_msg(self, task_input):
+        """ Return a boolean enabling the error message to appear regarding of the options and the context"""
+        if self._error_message_visibility == 'hidden_until':
+            submission_date = task_input.get("@time", "2000-01-01 00:00:00")[:-7] #To remove decimals on the seconds
+            try:
+                submission_date = datetime.strptime(submission_date, '%Y-%m-%d %X')
+                return submission_date >= datetime.strptime(self._error_msg_visibility_start, '%Y-%m-%d %X')
+            except ValueError:
+                raise ValueError("Invalid date format")
+        if self._error_message_visibility == "after_attempt":
+            nbr_attempts = int(task_input.get("@attempts", "0"))
+            return nbr_attempts >= int(self._error_msg_attempts)
+        return True
+
 
     def sort(self, answers):
         """Sort the answers based on alphabetical order"""
@@ -166,6 +188,18 @@ class MathProblem(Problem):
     def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
 
+        if "error_msg_visibility_start" in problem_content and problem_content["error_msg_visibility"] == "hidden_until":
+            if problem_content["error_msg_visibility_start"] == '':
+                problem_content["error_msg_visibility_start"] = '2000-01-01 00:00:00'
+            else:
+                try:
+                    datetime.strptime(problem_content["error_msg_visibility_start"], '%Y-%m-%d %X')
+                except ValueError:
+                    raise ValueError("Invalid date format")
+
+        if "error_msg_attempts" in problem_content and problem_content["error_msg_visibility"] == "after_attempt" and problem_content["error_msg_attempts"] == '':
+            problem_content["error_msg_attempts"] = 0
+            
         if "tolerance" in problem_content:
             if problem_content["tolerance"]:
                 problem_content["tolerance"] = float(problem_content["tolerance"])
