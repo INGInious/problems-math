@@ -17,7 +17,7 @@ PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
 
 class AnswersPage(INGIniousAdminPage):
     def GET_AUTH(self, courseid):  # pylint: disable=arguments-differ
-        course, __ = self.get_course_and_check_rights(courseid, allow_all_staff=False)
+        course, __ = self.get_course_and_check_rights(courseid)
         data = {}
         tasks = course.get_tasks(True)
         for taskid, task in tasks.items():
