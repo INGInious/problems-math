@@ -6,7 +6,7 @@ Dependencies setup
 
 The plugin math needs :
 
-- INGInious 0.8.7
+- INGInious 0.8
 - sympy 1.13.3
 - antlr4-python3-runtime 4.11.1
 
