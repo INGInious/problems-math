@@ -7,9 +7,7 @@ General conventions
 
 Do not use these letters to represent variables.
 
-*log* means log base 10.
-
-*ln* means natural logarithm.
+Both *ln* and *log* mean the natural logarithm.
 
 *log_a* means log with base a.
 

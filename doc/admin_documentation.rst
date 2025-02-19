@@ -8,7 +8,6 @@ Installation and configuration
     :maxdepth: 2
 
     admin_doc/install_doc/installation_conf
-    admin_doc/install_doc/troubleshooting
 
 Functionnalities
 ----------------

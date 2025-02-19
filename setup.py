@@ -17,7 +17,7 @@ setup(
     version="0.1dev1",
     description="Plugin to add math formulas problem type",
     packages=find_packages(),
-    install_requires=["inginious>=0.5.dev0", "sympy", "antlr4-python3-runtime==4.9.3"],
+    install_requires=["inginious==0.8.*", "sympy==1.13.3", "antlr4-python3-runtime==4.11.1"],
     tests_require=[],
     extras_require={"doc": doc_requires},
     scripts=[],
