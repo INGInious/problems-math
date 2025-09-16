@@ -4,11 +4,11 @@
 from setuptools import setup, find_packages
 
 doc_requires = [
-    "sphinx==4.5.0",
-    "sphinx_rtd_theme==1.0.0",
-    "sphinx-tabs==3.3.1",
-    "ipython==8.2.0",
-    "sphinx-autodoc-typehints>=1.12.0"
+    "ipython==8.12.3",
+    "sphinx==7.4.7",
+    "sphinx-autodoc-typehints==2.3.0",
+    "sphinx-rtd-theme==3.0.0",
+    "sphinx-tabs==3.4.5"
 ]
 
 
