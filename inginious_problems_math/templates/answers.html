@@ -3,17 +3,19 @@
 
 {% extends "layout.html" %}
 
-{% block title %} {{course.get_name(user_manager.session_language()) }} - {{_("Math answers")}} {% endblock %}
+{% block title %} {{course.get_name(session.language) }} - {{_("Math answers")}} {% endblock %}
 
 {% block column %}
-{{ template_helper.call('course_admin_menu',course=course,current='math-answers') | safe }}
+{% with current='mathanswerspage' %}
+    {% include 'course_admin/menu.html' %}
+{% endwith %}
 {% endblock %}
 
 {% block navbar %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{get_homepath()}}/course/{{course.get_id()}}">{{course.get_name(user_manager.session_language())}}</a></li>
-            <li class="breadcrumb-item"><a href="{{get_homepath()}}/admin/{{course.get_id()}}" title="Administration" data-toggle="tooltip" data-placement="bottom">
+            <li class="breadcrumb-item"><a href="{{url_for('coursepage', courseid=course.get_id()) }}">{{course.get_name(session.language)}}</a></li>
+            <li class="breadcrumb-item"><a href="{{url_for('coursesettingspage', courseid=course.get_id()) }}" title="Administration" data-toggle="tooltip" data-placement="bottom">
                 <i class="fa fa-user-secret"></i></a></li>
             <li class="breadcrumb-item active"><a href="#"><i class="fa fa-calculator"></i> Math answers <span class="sr-only">(current)</span></a></li>
         </ol>
@@ -31,7 +33,7 @@
             <div class="card-header" id="heading_{{index}}">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse_{{index}}" aria-expanded="false" aria-controls="collapse_{{index}}">
-                        {{ data[taskid]['task'].get_name(user_manager.session_language()) }}
+                        {{ data[taskid]['task'].get_name(session.language) }}
                     </button>
                 </h2>
             </div>
@@ -39,7 +41,7 @@
                 <div class="card-body">
                     {% for pid in data[taskid]['pid'].keys() %}
                         <p>
-                            {{ data[taskid]['pid'][pid].get_name(user_manager.session_language()) }}
+                            {{ data[taskid]['pid'][pid].get_name(session.language) }}
                             <ol>
                             {% for item in data[taskid]['answers'][pid][:5] %}
                                 <li>

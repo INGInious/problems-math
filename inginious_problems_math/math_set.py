@@ -1,6 +1,7 @@
 import os
 import re
 
+from flask import render_template
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious_problems_math.math_problem import MathProblem, DisplayableMathProblem
 
@@ -115,7 +116,7 @@ class DisplayableMathSetProblem(MathSetProblem, DisplayableProblem):
     """ A displayable math problem """
 
     # Some class attributes
-    html_file = "math_set_edit.html"
+    html_file = "math/math_set_edit.html"
 
     def __init__(self, problemid, content, translations, taskfs):
         MathSetProblem.__init__(self, problemid, content, translations, taskfs)
@@ -124,14 +125,14 @@ class DisplayableMathSetProblem(MathSetProblem, DisplayableProblem):
     def get_type_name(self, language):
         return "math-set"
 
-    def show_input(self, template_helper, language, seed):
-        return DisplayableMathProblem.show_input(self, template_helper, language, seed, format=MathSetProblem.get_format(self))
+    def show_input(self, language, seed):
+        return DisplayableMathProblem.show_input(self, language, seed, format=MathSetProblem.get_format(self))
 
     @classmethod
-    def show_editbox(cls, template_helper, key, language):
-        return template_helper.render(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key,
+    def show_editbox(cls, key, language):
+        return render_template(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key,
                                       problem_type=problem_type, friendly_type=cls.get_type_name(language))
 
     @classmethod
-    def show_editbox_templates(cls, template_helper, key, language):
-        return DisplayableMathProblem.show_editbox_templates(template_helper, key, language, format=math_format)
+    def show_editbox_templates(cls, key, language):
+        return DisplayableMathProblem.show_editbox_templates(key, language, format=math_format)

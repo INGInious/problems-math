@@ -36,7 +36,7 @@
 
 <script>
     $(function() {
-        homepath = '{{get_homepath()}}';
+        homepath = '{{url_for('indexpage', _external=True)}}';
         math_add_answer('{{inputId}}', '');
     });
 </script>

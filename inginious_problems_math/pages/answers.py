@@ -6,7 +6,9 @@
 import json
 import os
 from operator import itemgetter
+from flask import render_template
 
+from inginious.frontend.models import UserTask
 from inginious.frontend.pages.course_admin.utils import INGIniousAdminPage
 from inginious.frontend.parsable_text import ParsableText
 from inginious_problems_math.math_problem import MathProblem
@@ -19,7 +21,7 @@ class AnswersPage(INGIniousAdminPage):
     def GET_AUTH(self, courseid):  # pylint: disable=arguments-differ
         course, __ = self.get_course_and_check_rights(courseid, allow_all_staff=False)
         data = {}
-        tasks = course.get_tasks(True)
+        tasks = course.get_task_dispenser().get_ordered_tasks()
         for taskid, task in tasks.items():
             problems = task.get_problems()
             for problem in problems:
@@ -29,10 +31,10 @@ class AnswersPage(INGIniousAdminPage):
 
         # Fetch user tasks
         for taskid, item in data.items():
-            states = self.database.user_tasks.aggregate([
-                {"$match" : {"courseid": courseid, "taskid": taskid}},
+            states = UserTask.objects(courseid=courseid, taskid=taskid).aggregate(
                 {"$group": {"_id": "$state"}}
-            ])
+            )
+
             # Parse the task state for each user
             states = [json.loads(state["_id"]) if state["_id"] else {} for state in states]
 
@@ -45,5 +47,5 @@ class AnswersPage(INGIniousAdminPage):
                 task_ans[pid] = sorted([(json.loads(ans), count) for ans, count in task_ans.get(pid, {}).items() if ans],
                                        key=itemgetter(1), reverse=True)
 
-        return self.template_helper.render("answers.html", template_folder=PATH_TO_TEMPLATES, course=course,
+        return render_template("math/answers.html", template_folder=PATH_TO_TEMPLATES, course=course,
                                            data=data, ParsableText=ParsableText)

@@ -130,7 +130,7 @@
                         </div>
                         <script type="text/javascript">
                             $(function() {
-                                $('#error_msg_visibility_start-PID').datetimepicker({locale: '{{user_manager.session_language()}}', sideBySide: true, format:'YYYY-MM-DD HH:mm:ss'});
+                                $('#error_msg_visibility_start-PID').datetimepicker({locale: '{{session.language}}', sideBySide: true, format:'YYYY-MM-DD HH:mm:ssZ', timeZone: '{{session.timezone}}'});
                             });
                         </script>
                     </div>
@@ -176,7 +176,7 @@
         <h4 class="modal-title">Help and documentation</h4>
       </div>
       <div class="modal-body">
-        {% include ("info_" + problem_type +".html") %}
+        {% include ("math/info_" + problem_type +".html") %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

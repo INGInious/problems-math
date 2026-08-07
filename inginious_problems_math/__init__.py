@@ -28,9 +28,9 @@ class StaticMockPage(INGIniousPage):
         return self.GET(path)
 
 def add_admin_menu(course): # pylint: disable=unused-argument
-    return 'math-answers', '<i class="fa fa-calculator fa-fw"></i>&nbsp; Math answers'
+    return 'mathanswerspage', '<i class="fa fa-calculator fa-fw"></i>&nbsp; Math answers'
 
-def init(plugin_manager, course_factory, client, plugin_config):
+def init(plugin_manager, client, config):
     # TODO: Replace by shared static middleware and let webserver serve the files
     plugin_manager.add_page('/plugins/math/static/<path:path>', StaticMockPage.as_view('mathstaticpage'))
     plugin_manager.add_page('/plugins/math/hint', HintPage.as_view('mathhintpage'))
@@ -41,7 +41,4 @@ def init(plugin_manager, course_factory, client, plugin_config):
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/math.js")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/matheditor.js")
     plugin_manager.add_hook('course_admin_menu', add_admin_menu)
-    course_factory.get_task_factory().add_problem_type(DisplayableMathProblem)
-    course_factory.get_task_factory().add_problem_type(DisplayableMathMatrixProblem)
-    course_factory.get_task_factory().add_problem_type(DisplayableMathIntervalProblem)
-    course_factory.get_task_factory().add_problem_type(DisplayableMathSetProblem)
+    plugin_manager.add_template_prefix('math', PATH_TO_TEMPLATES)

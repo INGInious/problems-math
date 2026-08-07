@@ -3,14 +3,17 @@ import re
 import json
 import math
 
-from datetime import datetime
+from flask import render_template
+from datetime import datetime, timezone
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
 from sympy import simplify, sympify, expand_log, expand_trig, factor, N, E, pi, I, Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan
+
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious.frontend.parsable_text import ParsableText
+from inginious.frontend.accessible_time import parse_date
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
 PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
@@ -112,10 +115,10 @@ class MathProblem(Problem):
     def check_visibility_error_msg(self, task_input):
         """ Return a boolean enabling the error message to appear regarding of the options and the context"""
         if self._error_message_visibility == 'hidden_until':
-            submission_date = task_input.get("@time", "2000-01-01 00:00:00")[:-7] #To remove decimals on the seconds
+            submission_date = task_input.get("@time")
             try:
-                submission_date = datetime.strptime(submission_date, '%Y-%m-%d %X')
-                return submission_date >= datetime.strptime(self._error_msg_visibility_start, '%Y-%m-%d %X')
+                submission_date = parse_date(submission_date) if submission_date else datetime.min.replace(tzinfo=timezone.max)
+                return submission_date >= parse_date(self._error_msg_visibility_start)
             except ValueError:
                 raise ValueError("Invalid date format")
         if self._error_message_visibility == "after_attempt":
@@ -189,11 +192,9 @@ class MathProblem(Problem):
         problem_content = Problem.parse_problem(problem_content)
 
         if "error_msg_visibility_start" in problem_content and problem_content["error_msg_visibility"] == "hidden_until":
-            if problem_content["error_msg_visibility_start"] == '':
-                problem_content["error_msg_visibility_start"] = '2000-01-01 00:00:00'
-            else:
+            if problem_content["error_msg_visibility_start"]:
                 try:
-                    datetime.strptime(problem_content["error_msg_visibility_start"], '%Y-%m-%d %X')
+                    parse_date(problem_content["error_msg_visibility_start"])
                 except ValueError:
                     raise ValueError("Invalid date format")
 
@@ -228,7 +229,7 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
 
     # Some class attributes
     problem_type = "math"
-    html_file = "math_edit.html"
+    html_file = "math/math_edit.html"
 
     def __init__(self, problemid, content, translations, taskfs):
         MathProblem.__init__(self, problemid, content, translations, taskfs)
@@ -238,17 +239,16 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
     def get_type_name(self, language):
         return problem_type
 
-    def show_input(self, template_helper, language, seed, format=math_format):
+    def show_input(self, language, seed, format=math_format):
         """ Show MathProblem """
-        header = ParsableText(self.gettext(language, self._header), "rst",
-                              translation=self.get_translation_obj(language))
-        return template_helper.render("math.html", template_folder=PATH_TO_TEMPLATES, inputId=self.get_id(),
+        header = ParsableText(self.gettext(language, self._header), "rst")
+        return render_template("math/math.html", template_folder=PATH_TO_TEMPLATES, inputId=self.get_id(),
                                       header=header, hints=self._hints, format=format)
 
     @classmethod
-    def show_editbox(cls, template_helper, key, language):
-        return template_helper.render(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key, problem_type=cls.problem_type, friendly_type=cls.get_type_name(language))
+    def show_editbox(cls, key, language):
+        return render_template(cls.html_file, template_folder=PATH_TO_TEMPLATES, key=key, problem_type=cls.problem_type, friendly_type=cls.get_type_name(language))
 
     @classmethod
-    def show_editbox_templates(cls, template_helper, key, language, format=math_format):
-        return template_helper.render("math_edit_templates.html", template_folder=PATH_TO_TEMPLATES, key=key, format=format)
+    def show_editbox_templates(cls, key, language, format=math_format):
+        return render_template("math/math_edit_templates.html", template_folder=PATH_TO_TEMPLATES, key=key, format=format)
